@@ -60,3 +60,5 @@ Thumbs.db
 
 # Data files (optional - remove if you want to track messages.json)
 # messages.json
+
+# Note: public/ folder is NOT ignored - it contains the built frontend for deployment

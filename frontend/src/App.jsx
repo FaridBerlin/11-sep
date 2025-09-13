@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const API_BASE = 'http://localhost:3000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
 function App() {
   const [messages, setMessages] = useState([])
@@ -10,6 +10,9 @@ function App() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [editName, setEditName] = useState('')
+  const [editMessage, setEditMessage] = useState('')
 
   // Load messages
   useEffect(() => {
@@ -68,6 +71,44 @@ function App() {
     }
   }
 
+  // Start editing
+  const startEdit = (msg) => {
+    setEditingId(msg.id)
+    setEditName(msg.name)
+    setEditMessage(msg.message)
+  }
+
+  // Cancel editing
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditName('')
+    setEditMessage('')
+  }
+
+  // Save edit
+  const saveEdit = async (id) => {
+    if (!editName.trim() || !editMessage.trim()) return
+
+    try {
+      const response = await fetch(`${API_BASE}/messages/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName.trim(), message: editMessage.trim() })
+      })
+      
+      if (response.ok) {
+        setEditingId(null)
+        setEditName('')
+        setEditMessage('')
+        fetchMessages()
+      } else {
+        setError('Failed to update message')
+      }
+    } catch (err) {
+      setError('Failed to update message')
+    }
+  }
+
   return (
     <div className="app">
       <h1>🏠 Mini-Gästebuch</h1>
@@ -104,9 +145,34 @@ function App() {
         ) : (
           messages.map(msg => (
             <div key={msg.id} className="message">
-              <strong>{msg.name}</strong>
-              <p>{msg.message}</p>
-              <button onClick={() => deleteMessage(msg.id)}>🗑️</button>
+              {editingId === msg.id ? (
+                <div className="edit-form">
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Name"
+                  />
+                  <textarea
+                    value={editMessage}
+                    onChange={(e) => setEditMessage(e.target.value)}
+                    placeholder="Nachricht"
+                  />
+                  <div className="edit-buttons">
+                    <button onClick={() => saveEdit(msg.id)}>💾 Speichern</button>
+                    <button onClick={cancelEdit}>❌ Abbrechen</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <strong>{msg.name}</strong>
+                  <p>{msg.message}</p>
+                  <div className="message-buttons">
+                    <button onClick={() => startEdit(msg)}>✏️</button>
+                    <button onClick={() => deleteMessage(msg.id)}>🗑️</button>
+                  </div>
+                </>
+              )}
             </div>
           ))
         )}

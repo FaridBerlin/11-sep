@@ -97,16 +97,68 @@ h1 {
   line-height: 1.4;
 }
 
-.message button {
+.message-buttons {
   position: absolute;
   top: 10px;
   right: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.message-buttons button {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 16px;
+  padding: 2px;
 }
 
-.message button:hover {
+.message-buttons button:hover {
   opacity: 0.7;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-form input,
+.edit-form textarea {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.edit-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-buttons button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.edit-buttons button:first-child {
+  background: #28a745;
+  color: white;
+}
+
+.edit-buttons button:last-child {
+  background: #dc3545;
+  color: white;
+}
+
+.edit-buttons button:hover {
+  opacity: 0.8;
 }
